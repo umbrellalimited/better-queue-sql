@@ -6,14 +6,21 @@ function MysqlAdapter(opts) {
 
 MysqlAdapter.prototype.connect = function (cb) {
   if (this.knex) return cb();
-  var connection = {
-    database: this.dbname || 'template1',
+
+  var connectionMode = this.socketPath ? {
+    socketPath: this.socketPath,
+  } : {
     host: this.host || 'localhost',
     port: this.port || 3306,
+  }
+  var connection = {
+    database: this.dbname || 'template1',
     user: this.username || 'root',
     password: this.password || '',
-    charset: this.charset || 'utf8'
+    charset: this.charset || 'utf8',
+    ...connectionMode,
   };
+
   this.knex = require('knex')({
     client: 'mysql',
     connection: connection,
